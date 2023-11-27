@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const morgan = require('morgan');
 const connectToDatabase = require('./config/db');
@@ -7,6 +9,10 @@ require('dotenv').config({ path: '.env' });
 
 // Routes
 const bookRoutes = require('./routes/bookRoutes');
+
+// Import GlobalError and ApiError
+const ApiError = require('./utils/apiError');
+const globalError = require('./middlewares/middlewareError');
 
 // Connect MongoDatabase
 connectToDatabase();
@@ -31,6 +37,9 @@ app.use((req, res, next) => {
 // Middleware => express to parsing data.
 app.use(express.json({ limit: '20kb' }));
 
+// Uploads folder to save images
+app.use(express.static(path.join(__dirname, 'uploads')));
+
 // Middleware => Morgan Shown Request Status
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -39,6 +48,12 @@ if (process.env.NODE_ENV === 'development') {
 
 // Middleware => Routes
 app.use('/api/books', bookRoutes);
+
+// Middleware => ApiError & Global Error: Handling middleware for express
+app.all('*', (req, res, next) => {
+  next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
+});
+app.use(globalError)
 
 // Initial Port
 const PORT = process.env.PORT || 5000;
