@@ -6,7 +6,6 @@ const Schema = mongoose.Schema;
 // Define Book Schema
 const bookSchema = new Schema(
   {
-    _id: mongoose.Schema.Types.ObjectId,
     title: {
       type: String,
       required: true,

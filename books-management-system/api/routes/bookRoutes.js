@@ -5,6 +5,7 @@ const {
   getBooks,
   createNewBook,
   deleteBook,
+  uploadBookImages
 } = require('../controllers/bookController');
 
 // Validator
@@ -13,10 +14,14 @@ const { createNewBookValidator } = require('../utils/validator');
 // Initial Router
 const router = express.Router();
 
-router.get('/', getBooks);
-
-router.post('/', createNewBookValidator, createNewBook);
-
+router
+  .route('/')
+  .get(getBooks)
+  .post(
+    uploadBookImages,
+    createNewBookValidator, 
+    createNewBook
+  );
 router.delete('/:id', deleteBook);
 
 module.exports = router;
